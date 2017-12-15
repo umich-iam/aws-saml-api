@@ -1,13 +1,21 @@
 # samlapi
 
+This is a fork of https://github.com/CU-CloudCollab/samlapi to work with the University of Michigan IdP.
+
+All credit goes to sbower and Cornell for their efforts.
+
 ## Usage
-You can use Cornell Shibboleth login for both API and CLI access to AWS.  I built docker images that will be maintained by the Cloud Services team that can be used for this and it is as simple as running the following command:
-
+1. Build the samlapi container
 ```
-docker run -it --rm -v ~/.aws:/root/.aws dtr.cucloud.net/cs/samlapi
+docker build -t samlapi .
 ```
 
-After this command has been run it will prompt you for your netid and password.  This will be used to login you into Cornell Shibboleth. You will get a push from DUO.  Once you have confirmed the DUO notification, you will be prompted to select the role you wish to use for login, if you have only one role it will choose that automatically.  The credentials will be placed in the default credential file (~/.aws/credentials) and can be used as follows:
+2. Launch the container
+```
+docker run -it --rm -v ~/.aws:/root/.aws samlapi
+```
+
+After this command has been run it will prompt you for your uniqname and password.  This will be used to login you into Shibboleth. You will get a push from DUO.  Once you have confirmed the DUO notification, you will be prompted to select the role you wish to use for login, if you have only one role it will choose that automatically.  The credentials will be placed in the default credential file (~/.aws/credentials) and can be used as follows:
 
 ```
 aws --profile saml s3 ls
