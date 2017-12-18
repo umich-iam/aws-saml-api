@@ -16,75 +16,75 @@ OUTPUT_FORMAT = 'json'.freeze
 
 cli = HighLine.new
 
-# Get the federated credentials from the user
-print 'Uniqname: '
-uid = STDIN.gets.chomp
-password = cli.ask('Password:  ') { |q| q.echo = '*' }
-print ''
-
-driver = Selenium::WebDriver.for :firefox
-driver.navigate.to BASE_URL
-
-wait = Selenium::WebDriver::Wait.new(timeout: 60) # seconds
-wait.until { driver.find_element(id: 'login') }
-
-element = driver.find_element(:id, 'login')
-element.send_keys uid
-element = driver.find_element(:id, 'password')
-element.send_keys password
-element = driver.find_element(:id, 'loginSubmit')
-element.click
-
-sleep 3
-
-wait.until { driver.find_element(id: 'duo_iframe') }
-driver.switch_to.frame 'duo_iframe'
-wait.until { driver.find_element(name: 'passcode') }
-puts 'Sending Duo push notification...'
-driver.find_element(:css, 'button.positive.auth-button').click
-
-driver.switch_to.default_content
-wait.until { driver.find_element(name: 'SAMLResponse') }
-assertion = driver.find_element(:name, 'SAMLResponse').attribute('value')
-
-driver.quit
-
-saml = OneLogin::RubySaml::Response.new(Base64.decode64(assertion))
-
-aws_roles = []
-saml.attributes.multi(AWS_ROLE).each do |role|
-  (role_arn, principal_arn) = role.split(',')
-  aws_roles.push(principal_arn: principal_arn,
-                 role_arn: role_arn)
-end
-
-if aws_roles.length > 1
-  i = 0
-  puts 'Please choose the role you would like to assume:'
-  aws_roles.each do |aws_role|
-    print '[', i, ']: ', aws_role[:role_arn]
-    puts
-    i += 1
-  end
-
-  print 'Selection: '
-  selection = STDIN.gets.chomp.to_i
-
-  puts "you selected #{selection}, #{aws_roles[selection][:role_arn]}"
-
-  if selection > aws_roles.length - 1
-    puts 'You selected an invalid role index, please try again'
-    exit(0)
-  end
-
-  principal_arn = aws_roles[selection][:principal_arn]
-  role_arn = aws_roles[selection][:role_arn]
-else
-  principal_arn = aws_roles[0][:principal_arn]
-  role_arn = aws_roles[0][:role_arn]
-end
-
 begin
+  # Get the federated credentials from the user
+  print 'Uniqname: '
+  uid = STDIN.gets.chomp
+  password = cli.ask('Password:  ') { |q| q.echo = '*' }
+  print ''
+
+  driver = Selenium::WebDriver.for :firefox
+  driver.navigate.to BASE_URL
+
+  wait = Selenium::WebDriver::Wait.new(timeout: 60) # seconds
+  wait.until { driver.find_element(id: 'login') }
+
+  element = driver.find_element(:id, 'login')
+  element.send_keys uid
+  element = driver.find_element(:id, 'password')
+  element.send_keys password
+  element = driver.find_element(:id, 'loginSubmit')
+  element.click
+
+  sleep 3
+
+  wait.until { driver.find_element(id: 'duo_iframe') }
+  driver.switch_to.frame 'duo_iframe'
+  wait.until { driver.find_element(name: 'passcode') }
+  puts 'Sending Duo push notification...'
+  driver.find_element(:css, 'button.positive.auth-button').click
+
+  driver.switch_to.default_content
+  wait.until { driver.find_element(name: 'SAMLResponse') }
+  assertion = driver.find_element(:name, 'SAMLResponse').attribute('value')
+
+  driver.quit
+
+  saml = OneLogin::RubySaml::Response.new(Base64.decode64(assertion))
+
+  aws_roles = []
+  saml.attributes.multi(AWS_ROLE).each do |role|
+    (role_arn, principal_arn) = role.split(',')
+    aws_roles.push(principal_arn: principal_arn,
+                   role_arn: role_arn)
+  end
+
+  if aws_roles.length > 1
+    i = 0
+    puts 'Please choose the role you would like to assume:'
+    aws_roles.each do |aws_role|
+      print '[', i, ']: ', aws_role[:role_arn]
+      puts
+      i += 1
+    end
+
+    print 'Selection: '
+    selection = STDIN.gets.chomp.to_i
+
+    puts "you selected #{selection}, #{aws_roles[selection][:role_arn]}"
+
+    if selection > aws_roles.length - 1
+      puts 'You selected an invalid role index, please try again'
+      exit(0)
+    end
+
+    principal_arn = aws_roles[selection][:principal_arn]
+    role_arn = aws_roles[selection][:role_arn]
+  else
+    principal_arn = aws_roles[0][:principal_arn]
+    role_arn = aws_roles[0][:role_arn]
+  end
+
   sts = Aws::STS::Client.new(region: REGION)
   print 'generating token'
   token = sts.assume_role_with_saml(role_arn: role_arn,
