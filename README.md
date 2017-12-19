@@ -1,18 +1,18 @@
-# samlapi
+# aws-saml-api
 
 This is a fork of https://github.com/CU-CloudCollab/samlapi to work with the University of Michigan IdP.
 
 All credit goes to sbower and Cornell for their efforts.
 
 ## Usage
-1. Build the samlapi container
+1. Build the aws-saml-api container
 ```
-docker build -t samlapi .
+docker build -t aws-saml-api .
 ```
 
 2. Launch the container
 ```
-docker run -it --rm -v ~/.aws:/root/.aws samlapi
+docker run -it --rm -v ~/.aws:/root/.aws aws-saml-api
 ```
 
 After this command has been run it will prompt you for your uniqname and password.  This will be used to login you into Shibboleth. You will get a push from DUO.  Once you have confirmed the DUO notification, you will be prompted to select the role you wish to use for login, if you have only one role it will choose that automatically.  The credentials will be placed in the default credential file (~/.aws/credentials) and can be used as follows:

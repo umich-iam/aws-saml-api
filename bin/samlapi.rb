@@ -41,8 +41,13 @@ begin
   wait.until { driver.find_element(id: 'duo_iframe') }
   driver.switch_to.frame 'duo_iframe'
   wait.until { driver.find_element(name: 'passcode') }
-  puts 'Sending Duo push notification...'
-  driver.find_element(:css, 'button.positive.auth-button').click
+  begin
+    driver.find_element(class: 'used-automatically')
+    puts 'Sending Duo request...'
+  rescue
+    puts 'Sending Duo push notification...'
+    driver.find_element(:css, 'button.positive.auth-button').click
+  end
 
   driver.switch_to.default_content
   wait.until { driver.find_element(name: 'SAMLResponse') }
