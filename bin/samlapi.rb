@@ -101,8 +101,8 @@ begin
   filename = Dir.home + AWS_CONFIG_FILE
 
   # Read in the existing config file
-  file = File.open(filename, 'w')
   config = ParseConfig.new(filename)
+  config.import_config
 
   # Put the credentials into a specific profile instead of clobbering
   # the default credentials
@@ -113,8 +113,8 @@ begin
   config.add_to_group('saml', 'aws_session_token', token.credentials.session_token)
 
   # Write the updated config file
-  #file = File.open(filename, 'w')
-  config.write(file, false)
+  file = File.open(filename, 'w')
+  config.write(file, quoted=false)
   file.close
 
   # Give the user some basic info as to what has just happened
