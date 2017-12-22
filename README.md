@@ -11,8 +11,13 @@ docker build -t aws-saml-api .
 ```
 
 2. Launch the container
+NOTE: Your ~/.aws/credentials file must exist before launching the container. Launching from aws-saml-api.sh will create this for you.
 ```
 docker run -it --rm -v ~/.aws:/root/.aws aws-saml-api
+
+OR
+
+sh aws-saml-api.sh
 ```
 
 After this command has been run it will prompt you for your uniqname and password.  This will be used to login you into Shibboleth. You will get a push from DUO.  Once you have confirmed the DUO notification, you will be prompted to select the role you wish to use for login, if you have only one role it will choose that automatically.  The credentials will be placed in the default credential file (~/.aws/credentials) and can be used as follows:
