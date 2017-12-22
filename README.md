@@ -10,7 +10,7 @@ All credit goes to sbower and Cornell for their efforts.
 docker build -t aws-saml-api .
 ```
 
-2. Launch the container
+2. Launch the container  
 NOTE: Your ~/.aws/credentials file must exist before launching the container. Launching from aws-saml-api.sh will create this for you.
 ```
 docker run -it --rm -v ~/.aws:/root/.aws aws-saml-api
