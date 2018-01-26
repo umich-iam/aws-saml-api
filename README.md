@@ -20,7 +20,7 @@ OR
 sh aws-saml-api.sh
 ```
 
-After this command has been run it will prompt you for your uniqname and password.  This will be used to login you into Shibboleth. You will get a push from DUO.  Once you have confirmed the DUO notification, you will be prompted to select the role you wish to use for login, if you have only one role it will choose that automatically.  The credentials will be placed in the default credential file (~/.aws/credentials) and can be used as follows:
+After this command has been run it will prompt you for your uniqname and password.  This will be used to login you into Shibboleth. You will get a push from DUO.  Once you have confirmed the DUO notification, you will be prompted to select the role you wish to use for login, if you have only one role it will choose that automatically.  The credentials will be placed in the saml credential file (~/.aws/credentials) and can be used as follows:
 
 ```
 aws --profile saml s3 ls
