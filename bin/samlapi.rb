@@ -58,7 +58,7 @@ begin
   saml = OneLogin::RubySaml::Response.new(Base64.decode64(assertion))
 
   aws_roles = []
-  saml.attributes.multi(AWS_ROLE).each do |role|
+  saml.attributes.multi(AWS_ROLE).sort.each do |role|
     (role_arn, principal_arn) = role.split(',')
     aws_roles.push(principal_arn: principal_arn,
                    role_arn: role_arn)
