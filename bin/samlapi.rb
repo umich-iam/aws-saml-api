@@ -17,6 +17,9 @@ OUTPUT_FORMAT = 'json'.freeze
 cli = HighLine.new
 
 begin
+  # Parse arguments
+  session_duration = ARGV[0]    # if not set the aws default is used (1 hour)
+
   # Get the federated credentials from the user
   print 'Uniqname: '
   uid = STDIN.gets.chomp
@@ -94,7 +97,8 @@ begin
   print 'generating token'
   token = sts.assume_role_with_saml(role_arn: role_arn,
                                     principal_arn: principal_arn,
-                                    saml_assertion: assertion)
+                                    saml_assertion: assertion,
+                                    duration_seconds: session_duration)
 
   # Write the AWS STS token into the AWS credential file
   puts Dir.home
