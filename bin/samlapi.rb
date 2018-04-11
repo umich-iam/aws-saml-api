@@ -48,8 +48,21 @@ begin
     driver.find_element(class: 'used-automatically')
     puts 'Sending Duo request...'
   rescue
-    puts 'Sending Duo push notification...'
-    driver.find_element(:css, 'button.positive.auth-button').click
+    puts "\nEnter a passcode or select one of the following options:"
+    puts ' 1. Duo Push to default device'
+    print 'Passcode or option (1): '
+    duo_code = STDIN.gets.chomp
+    puts ''
+    if duo_code == '1'
+      puts 'Sending Duo push notification...'
+      driver.find_element(:css, 'button.positive.auth-button').click
+    else
+      passcode_button = driver.find_element(class: 'passcode-label')
+      passcode_button.find_element(:css, 'button.positive.auth-button').click
+      passcode_input = driver.find_element(class: 'passcode-input')
+      passcode_input.send_keys duo_code
+      passcode_button.find_element(:css, 'button.positive.auth-button').click
+    end
   end
 
   driver.switch_to.default_content
